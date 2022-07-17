@@ -2,12 +2,25 @@ namespace PhotoBackend
 {
     public class MediaFile
     {
+        public int ID { get; set; }
+
         public string URL { get; set; }
 
-        public int TemperatureC { get; set; }
+        public DateTime CreationTime { get; set; }
 
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+        private string OwnerIP;
 
-        public string? Summary { get; set; }
+        public MediaFile(int iD, string uRL, DateTime creationTime, string ownerIP)
+        {
+            ID = iD;
+            URL = uRL;
+            CreationTime = creationTime;
+            OwnerIP = ownerIP;
+        }
+
+        public bool CanModify(string IPAddress)
+        {
+            return IPAddress.Equals(OwnerIP, StringComparison.OrdinalIgnoreCase);
+        }
     }
 }
