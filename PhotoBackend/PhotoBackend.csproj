@@ -12,6 +12,7 @@
     <PackageReference Include="Google.Cloud.BigQuery.V2" Version="3.0.0" />
     <PackageReference Include="Google.Cloud.Storage.V1" Version="4.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.15.1" />
+    <PackageReference Include="MySqlConnector" Version="2.1.11" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 
