@@ -47,18 +47,5 @@ namespace PhotoBackend.Controllers
             }
             return output;
         }
-
-        [HttpGet("download", Name = "DownloadFile")]
-        public void DownloadFile(string userIP)
-        {
-            string bucketName = "your-unique-bucket-name";
-            string objectName = "my-file-name";
-            string localPath = "my-local-path/my-file-name";
-
-            var storage = StorageClient.Create();
-            using var outputFile = File.OpenWrite(localPath);
-            storage.DownloadObject(bucketName, objectName, outputFile);
-            Console.WriteLine($"Downloaded {objectName} to {localPath}.");
-        }
      }
 }
