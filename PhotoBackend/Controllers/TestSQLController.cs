@@ -24,7 +24,7 @@ namespace PhotoBackend.Controllers
             {
                 {"IPAddress", (object)"127.0.0.1" }
             };
-            dbConnection.ExecuteNonQuery("SaveUser", parameters);
+            dbConnection.ExecuteNonQuery("InsertTestUser", parameters);
         }
 
     }
