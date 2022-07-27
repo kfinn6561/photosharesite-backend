@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Data;
+using PhotoBackend.Models;
 
 namespace PhotoBackend.Controllers
 {
@@ -28,12 +29,19 @@ namespace PhotoBackend.Controllers
         }
 
         [HttpGet("getusers",Name = "getusers")]
-        public string GetUsers()
+        public List<User> GetUsers()
         {
             DatabaseConnection dbConnection = new DatabaseConnection();
             DataTable users = dbConnection.ExecuteReader("SelectUsers", new Dictionary<string, object> { });
 
-            return JsonConvert.SerializeObject(users);
+            List<User> usersList = new List<User>();
+            foreach(DataRow row in users.Rows)
+            {
+                usersList.Add(new Models.User((int)row["UserID"], (string)row["IPAddress"]));
+            }
+
+            return usersList;
+
         }
 
     }
