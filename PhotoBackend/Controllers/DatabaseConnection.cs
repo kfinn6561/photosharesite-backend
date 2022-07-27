@@ -28,15 +28,26 @@ namespace PhotoBackend.Controllers
             connection.Close();
         }
 
-        public void ExecuteNonQuery(string procName, Dictionary<string,object> parameters)
+        public void ExecuteNonQuery(string procName, Dictionary<string, object> parameters)
         {
             MySqlCommand cmd = new MySqlCommand(procName, connection);
             cmd.CommandType = System.Data.CommandType.StoredProcedure;
-            foreach (KeyValuePair<string,object> param in parameters)
+            foreach (KeyValuePair<string, object> param in parameters)
             {
                 cmd.Parameters.AddWithValue(param.Key, param.Value);
             }
             cmd.ExecuteNonQuery();
+        }
+
+        public MySqlDataReader ExecuteReader(string procName, Dictionary<string, object> parameters)
+        {
+            MySqlCommand cmd = new MySqlCommand(procName, connection);
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            foreach (KeyValuePair<string, object> param in parameters)
+            {
+                cmd.Parameters.AddWithValue(param.Key, param.Value);
+            }
+            return cmd.ExecuteReader();
         }
     }
 }
