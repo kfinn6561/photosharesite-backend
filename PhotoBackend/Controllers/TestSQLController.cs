@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Google.Cloud.BigQuery.V2;
-using System;
+using Newtonsoft.Json;
+using System.Data;
 
 namespace PhotoBackend.Controllers
 {
@@ -16,7 +16,7 @@ namespace PhotoBackend.Controllers
             _logger = logger;
         }
 
-        [HttpGet(Name = "saveuser")]
+        [HttpGet("saveuser", Name = "saveuser")]
         public void SaveUser()
         {
             DatabaseConnection dbConnection = new DatabaseConnection();
@@ -25,6 +25,15 @@ namespace PhotoBackend.Controllers
                 {"IPAddress", (object)"127.0.0.1" }
             };
             dbConnection.ExecuteNonQuery("InsertTestUser", parameters);
+        }
+
+        [HttpGet("getusers",Name = "getusers")]
+        public string GetUsers()
+        {
+            DatabaseConnection dbConnection = new DatabaseConnection();
+            DataTable users = dbConnection.ExecuteReader("SelectUsers", new Dictionary<string, object> { });
+
+            return JsonConvert.SerializeObject(users);
         }
 
     }

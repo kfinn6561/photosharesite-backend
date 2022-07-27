@@ -1,4 +1,5 @@
 ﻿using MySqlConnector;
+using System.Data;
 
 
 namespace PhotoBackend.Controllers
@@ -39,7 +40,7 @@ namespace PhotoBackend.Controllers
             cmd.ExecuteNonQuery();
         }
 
-        public MySqlDataReader ExecuteReader(string procName, Dictionary<string, object> parameters)
+        public DataTable ExecuteReader(string procName, Dictionary<string, object> parameters)
         {
             MySqlCommand cmd = new MySqlCommand(procName, connection);
             cmd.CommandType = System.Data.CommandType.StoredProcedure;
@@ -47,7 +48,14 @@ namespace PhotoBackend.Controllers
             {
                 cmd.Parameters.AddWithValue(param.Key, param.Value);
             }
-            return cmd.ExecuteReader();
+            MySqlDataReader reader =  cmd.ExecuteReader();
+
+            DataTable output = new DataTable();
+
+            output.Load(reader);
+
+            return output;
+
         }
     }
 }
