@@ -1,4 +1,4 @@
-namespace PhotoBackend
+namespace PhotoBackend.Models
 {
     public class MediaFile
     {

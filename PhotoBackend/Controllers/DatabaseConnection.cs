@@ -1,4 +1,4 @@
-﻿using MySqlConnector;
+﻿using MySql.Data.MySqlClient;
 using System.Data;
 
 
@@ -9,18 +9,8 @@ namespace PhotoBackend.Controllers
         private MySqlConnection connection;
 
         public DatabaseConnection() {
-            var csb = new MySqlConnectionStringBuilder
-            {
-                Server = "35.230.136.114",
-                UserID = "backend",
-                Password = "test",
-                Database = "photosharesite",
-                SslCert = "secrets/client-cert.pem",
-                SslKey = "secrets/client-key.pem",
-                SslCa = "secrets/server-ca.pem",
-                SslMode = MySqlSslMode.VerifyCA,
-            };
-            connection = new MySqlConnection(csb.ConnectionString);
+            string connectionString = File.ReadAllText("secrets/connection-string.txt");
+            connection = new MySqlConnection(connectionString);
             connection.Open();
         }
 
