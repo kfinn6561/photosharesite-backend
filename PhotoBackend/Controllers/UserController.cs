@@ -1,35 +1,38 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Data;
 using PhotoBackend.Models;
+
 
 namespace PhotoBackend.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class TestSQLController : ControllerBase
+    public class UserController : ControllerBase
     {
 
-        private readonly ILogger<WeatherForecastController> _logger;
+        private readonly ILogger<UserController> _logger;
 
-        public TestSQLController(ILogger<WeatherForecastController> logger)
+        public UserController(ILogger<UserController> logger)
         {
             _logger = logger;
         }
 
-        [HttpGet("testsaveuser", Name = "testsaveuser")]
-        public void SaveUser()
+        [HttpPost("saveuser", Name = "saveuser")]
+        public UInt64 SaveUser(string ipAddress)
         {
             DatabaseConnection dbConnection = new DatabaseConnection();
             Dictionary<string, object> parameters = new Dictionary<string, object>
             {
-                {"IPAddress", (object)"127.0.0.1" }
+                {"IPAddress", (object)ipAddress }
             };
-            dbConnection.ExecuteNonQuery("InsertTestUser", parameters);
+            DataTable userIDTable = dbConnection.ExecuteReader("InsertUser", parameters);
             dbConnection.Close();
+
+            return (UInt64)userIDTable.Rows[0]["ID"];
         }
 
-        [HttpGet("testgetusers",Name = "testgetusers")]
+        [HttpGet("getusers", Name = "getusers")]
         public List<User> GetUsers()
         {
             DatabaseConnection dbConnection = new DatabaseConnection();
@@ -37,7 +40,7 @@ namespace PhotoBackend.Controllers
             dbConnection.Close();
 
             List<User> usersList = new List<User>();
-            foreach(DataRow row in users.Rows)
+            foreach (DataRow row in users.Rows)
             {
                 usersList.Add(new Models.User((int)row["UserID"], (string)row["IPAddress"]));
             }

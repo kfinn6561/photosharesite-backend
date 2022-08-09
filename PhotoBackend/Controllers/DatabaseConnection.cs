@@ -19,8 +19,9 @@ namespace PhotoBackend.Controllers
             connection.Close();
         }
 
-        public void ExecuteNonQuery(string procName, Dictionary<string, object> parameters)
+        public void ExecuteNonQuery(string procName,  Dictionary<string, object>? parameters = null)
         {
+            parameters = parameters ?? new  Dictionary<string, object>();//convert null to empty list
             MySqlCommand cmd = new MySqlCommand(procName, connection);
             cmd.CommandType = System.Data.CommandType.StoredProcedure;
             foreach (KeyValuePair<string, object> param in parameters)
@@ -30,8 +31,9 @@ namespace PhotoBackend.Controllers
             cmd.ExecuteNonQuery();
         }
 
-        public DataTable ExecuteReader(string procName, Dictionary<string, object> parameters)
+        public DataTable ExecuteReader(string procName, Dictionary<string, object>? parameters = null)
         {
+            parameters = parameters ?? new  Dictionary<string, object>();
             MySqlCommand cmd = new MySqlCommand(procName, connection);
             cmd.CommandType = System.Data.CommandType.StoredProcedure;
             foreach (KeyValuePair<string, object> param in parameters)
