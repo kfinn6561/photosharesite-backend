@@ -3,6 +3,7 @@ using Google.Cloud.Storage.V1;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 
 
@@ -13,6 +14,7 @@ namespace PhotoBackend.CloudStorage
         private readonly GoogleCredential googleCredential;
         private readonly StorageClient storageClient;
         private readonly string bucketName;
+        private readonly UrlSigner urlSigner;
 
 
         public GoogleCloudStorage (IConfiguration configuration)
@@ -21,6 +23,7 @@ namespace PhotoBackend.CloudStorage
             googleCredential = GoogleCredential.FromFile(configuration.GetValue<string>("GCPCredentialFile"));
             storageClient = StorageClient.Create(googleCredential);
             bucketName = configuration.GetValue<string>("GCPBucketName");
+            urlSigner = UrlSigner.FromServiceAccountCredential(googleCredential.UnderlyingCredential as ServiceAccountCredential);
         }
 
         public async Task<string> UploadFileAsync(IFormFile imageFile, string fileNameForStorage)
@@ -36,6 +39,17 @@ namespace PhotoBackend.CloudStorage
         public async Task DeleteFileAsync(string fileName)
         {
             await storageClient.DeleteObjectAsync(bucketName, fileName);
+        }
+
+        public string GetDownloadUrl(string fileName)
+        {
+            var signUrl = urlSigner.Sign(
+                bucketName,
+                fileName,
+                TimeSpan.FromHours(3),
+                HttpMethod.Get
+            );
+            return signUrl;
         }
 
     }

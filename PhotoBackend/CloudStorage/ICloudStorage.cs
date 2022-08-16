@@ -8,5 +8,6 @@ namespace PhotoBackend.CloudStorage
     {
         Task<string> UploadFileAsync(IFormFile imageFile, string fileNameForStorage);
         Task DeleteFileAsync(string fileNameForStorage);
+        string GetDownloadUrl(string fileName);
     }
 }

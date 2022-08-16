@@ -76,7 +76,19 @@ namespace PhotoBackend.Controllers
             return Ok();
         }
 
+        [HttpGet("download", Name = "DownloadFile")]
+        public ActionResult DownloadFile(int fileID)
+        {
+            var dbController = new DatabaseController();
 
+            var file = dbController.GetFile(fileID, "");
+
+            var downloadURL = _coudstorage.GetDownloadUrl(file.FileName);
+
+            Response.ContentType = "application/octet-stream";
+
+            return Redirect(downloadURL);
+        }
 
 
     }
