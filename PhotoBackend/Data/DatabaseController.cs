@@ -86,6 +86,42 @@ namespace PhotoBackend.Data
             return (int)result.Rows[0]["ID"];
         }
 
+        public void DeleteFile(int fileID)
+        {
+            DatabaseConnection dbConnection = new DatabaseConnection();
+            Dictionary<string, object> parameters = new Dictionary<string, object>
+            {
+                {"FileIDToDelete", (object)fileID }
+            };
+
+            dbConnection.ExecuteNonQuery("DeleteFile", parameters);
+            dbConnection.Close();
+        }
+
+        public MediaFile GetFile(int fileID, string userIP)
+        {
+            DatabaseConnection dbConnection = new DatabaseConnection();
+            Dictionary<string, object> parameters = new Dictionary<string, object>
+            {
+                {"FileID", (object)fileID }
+            };
+
+            var result = dbConnection.ExecuteReader("GetFile", parameters);
+            dbConnection.Close();
+
+            var row = result.Rows[0];
+
+            var output = new MediaFile(
+                    (int)row["FileID"],
+                    (string)row["url"],
+                    (DateTime)row["uploadDate"],
+                    String.Equals(userIP, (string)row["ipAddress"], StringComparison.OrdinalIgnoreCase),
+                    (string)row["fileName"]
+                    );
+            return output;
+
+        }
+
     }
 
     }

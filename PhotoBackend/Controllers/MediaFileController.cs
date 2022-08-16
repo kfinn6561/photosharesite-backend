@@ -40,10 +40,11 @@ namespace PhotoBackend.Controllers
         }
         
         [HttpPost("upload", Name = "UploadFile")]
-        public async Task UploadFile(IFormFile file, string IPAdress)
+        public async Task<IActionResult> UploadFile(IFormFile file, string IPAdress)
         {
             var fileExtension = Path.GetExtension(file.FileName);
-            string fileName = $"{DateTime.Now.ToString("yyyyMMddHHmmss")}{fileExtension}";
+            Guid uuid = Guid.NewGuid();
+            string fileName = $"{uuid.ToString()}{fileExtension}";
 
             string URL = await _coudstorage.UploadFileAsync(file, fileName);
 
@@ -52,8 +53,31 @@ namespace PhotoBackend.Controllers
             int ownerID = dbController.GetUserID(IPAdress);
 
             dbController.InsertFile(ownerID, URL, fileName);
-           
+
+            return Ok();
 
         }
+
+
+        [HttpDelete("delete", Name = "DeleteFile")]
+        public async Task<IActionResult> DeleteFile(int fileID, string IPAddress)
+        {
+            var dbController = new DatabaseController();
+
+            var file = dbController.GetFile(fileID, IPAddress);
+
+            if (!file.IsModifyable) {
+                return Unauthorized();
+            }
+
+            await _coudstorage.DeleteFileAsync(file.FileName);
+            dbController.DeleteFile(fileID);
+
+            return Ok();
+        }
+
+
+
+
     }
 }
