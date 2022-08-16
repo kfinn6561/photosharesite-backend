@@ -2,13 +2,14 @@
 using System.Data;
 
 
-namespace PhotoBackend.Controllers
+namespace PhotoBackend.Data
 {
     public class DatabaseConnection
     {
         private MySqlConnection connection;
 
-        public DatabaseConnection() {
+        public DatabaseConnection()
+        {
             string connectionString = File.ReadAllText("secrets/connection-string.txt");
             connection = new MySqlConnection(connectionString);
             connection.Open();
@@ -19,11 +20,11 @@ namespace PhotoBackend.Controllers
             connection.Close();
         }
 
-        public void ExecuteNonQuery(string procName,  Dictionary<string, object>? parameters = null)
+        public void ExecuteNonQuery(string procName, Dictionary<string, object>? parameters = null)
         {
-            parameters = parameters ?? new  Dictionary<string, object>();//convert null to empty list
+            parameters = parameters ?? new Dictionary<string, object>();//convert null to empty list
             MySqlCommand cmd = new MySqlCommand(procName, connection);
-            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.CommandType = CommandType.StoredProcedure;
             foreach (KeyValuePair<string, object> param in parameters)
             {
                 cmd.Parameters.AddWithValue(param.Key, param.Value);
@@ -33,14 +34,14 @@ namespace PhotoBackend.Controllers
 
         public DataTable ExecuteReader(string procName, Dictionary<string, object>? parameters = null)
         {
-            parameters = parameters ?? new  Dictionary<string, object>();
+            parameters = parameters ?? new Dictionary<string, object>();
             MySqlCommand cmd = new MySqlCommand(procName, connection);
-            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.CommandType = CommandType.StoredProcedure;
             foreach (KeyValuePair<string, object> param in parameters)
             {
                 cmd.Parameters.AddWithValue(param.Key, param.Value);
             }
-            MySqlDataReader reader =  cmd.ExecuteReader();
+            MySqlDataReader reader = cmd.ExecuteReader();
 
             DataTable output = new DataTable();
 

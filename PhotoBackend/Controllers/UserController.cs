@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using System.Data;
 using PhotoBackend.Models;
-
+using PhotoBackend.Data;
 
 namespace PhotoBackend.Controllers
 {
@@ -21,32 +21,23 @@ namespace PhotoBackend.Controllers
         [HttpPost("saveuser", Name = "saveuser")]
         public UInt64 SaveUser(string ipAddress)
         {
-            DatabaseConnection dbConnection = new DatabaseConnection();
-            Dictionary<string, object> parameters = new Dictionary<string, object>
-            {
-                {"IPAddress", (object)ipAddress }
-            };
-            DataTable userIDTable = dbConnection.ExecuteReader("InsertUser", parameters);
-            dbConnection.Close();
-
-            return (UInt64)userIDTable.Rows[0]["ID"];
+            var dbController = new DatabaseController();
+            return dbController.SaveUser(ipAddress);
         }
 
         [HttpGet("getusers", Name = "getusers")]
         public List<User> GetUsers()
         {
-            DatabaseConnection dbConnection = new DatabaseConnection();
-            DataTable users = dbConnection.ExecuteReader("SelectUsers");
-            dbConnection.Close();
+            var dbController = new DatabaseController();
+            return dbController.GetUsers();
 
-            List<User> usersList = new List<User>();
-            foreach (DataRow row in users.Rows)
-            {
-                usersList.Add(new Models.User((int)row["UserID"], (string)row["IPAddress"]));
-            }
+        }
 
-            return usersList;
-
+        [HttpGet("getuserid", Name = "getuserid")]
+        public int GetUserID(string IPAddress)
+        {
+            var dbController = new DatabaseController();
+            return dbController.GetUserID(IPAddress);
         }
 
     }

@@ -5,6 +5,9 @@ using System;
 using System.IO;
 using PhotoBackend.Models;
 using System.Data;
+using System.Web;
+using PhotoBackend.CloudStorage;
+using PhotoBackend.Data;
 
 namespace PhotoBackend.Controllers
 {
@@ -14,45 +17,43 @@ namespace PhotoBackend.Controllers
     {
 
         private readonly ILogger<MediaFileController> _logger;
+        private readonly ICloudStorage _coudstorage;
 
-        public MediaFileController(ILogger<MediaFileController> logger)
+        public MediaFileController(ILogger<MediaFileController> logger, ICloudStorage cloudStorage)
         {
             _logger = logger;
+            _coudstorage = cloudStorage;
         }
 
         [HttpGet("all", Name = "GetAllFiles")]
         public List<MediaFile> GetAllFiles(string userIP)
         {
-            DatabaseConnection dbConnection = new DatabaseConnection();
-            DataTable files = dbConnection.ExecuteReader("SelectFiles");
-            dbConnection.Close();
-
-            List<MediaFile> output = new List<MediaFile>();
-
-            foreach (DataRow row in files.Rows)
-            {
-                output.Add(new MediaFile(
-                    (int)row["FileID"],
-                    (string)row["url"],
-                    (DateTime)row["uploadDate"],
-                    String.Equals(userIP, (string)row["ipAddress"], StringComparison.OrdinalIgnoreCase)
-                    )
-                    );
-            }
-            return output;
+            var dbController = new DatabaseController();
+            return dbController.GetAllFiles(userIP);
         }
 
         [HttpPost("insert", Name = "InsertFile")]
-        public void InsertFile(int userID, string url)
+        public void InsertFile(int userID, string url, string fileName)
         {
-            DatabaseConnection dbConnection = new DatabaseConnection();
-            Dictionary<string, object> parameters = new Dictionary<string, object>
-            {
-                {"url", (object)url },
-                {"ownerID", userID}
-            };
-            dbConnection.ExecuteNonQuery("InsertFile", parameters);
-            dbConnection.Close();
+            var dbController = new DatabaseController();
+            dbController.InsertFile(userID, url, fileName);
+        }
+        
+        [HttpPost("upload", Name = "UploadFile")]
+        public async Task UploadFile(IFormFile file, string IPAdress)
+        {
+            var fileExtension = Path.GetExtension(file.FileName);
+            string fileName = $"{DateTime.Now.ToString("yyyyMMddHHmmss")}{fileExtension}";
+
+            string URL = await _coudstorage.UploadFileAsync(file, fileName);
+
+            var dbController = new DatabaseController();
+
+            int ownerID = dbController.GetUserID(IPAdress);
+
+            dbController.InsertFile(ownerID, URL, fileName);
+           
+
         }
     }
 }

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Data;
 using PhotoBackend.Models;
+using PhotoBackend.Data;
 
 namespace PhotoBackend.Controllers
 {
