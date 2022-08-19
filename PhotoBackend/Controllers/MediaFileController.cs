@@ -30,7 +30,12 @@ namespace PhotoBackend.Controllers
         [HttpGet("all", Name = "GetAllFiles")]
         public List<MediaFile> GetAllFiles(string userIP)
         {
-            return _databaseController.GetAllFiles(userIP);
+            var mediaFiles = _databaseController.GetAllFiles(userIP);
+            foreach (var mediaFile in mediaFiles)
+            {
+                mediaFile.URL = _coudstorage.GetDownloadUrl(mediaFile.URL);
+            }
+            return mediaFiles;
         }
 
         [HttpPost("insert", Name = "InsertFile")]

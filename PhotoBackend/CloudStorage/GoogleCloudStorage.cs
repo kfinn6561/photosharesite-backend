@@ -15,6 +15,7 @@ namespace PhotoBackend.CloudStorage
         private readonly StorageClient storageClient;
         private readonly string bucketName;
         private readonly UrlSigner urlSigner;
+        private readonly int URLExpiryTimeHours;
 
 
         public GoogleCloudStorage (IConfiguration configuration)
@@ -24,6 +25,7 @@ namespace PhotoBackend.CloudStorage
             storageClient = StorageClient.Create(googleCredential);
             bucketName = configuration.GetValue<string>("GCPBucketName");
             urlSigner = UrlSigner.FromServiceAccountCredential(googleCredential.UnderlyingCredential as ServiceAccountCredential);
+            URLExpiryTimeHours = configuration.GetValue<int>("URLExpiryTimeHours");
         }
 
         public async Task<string> UploadFileAsync(IFormFile imageFile, string fileNameForStorage)
