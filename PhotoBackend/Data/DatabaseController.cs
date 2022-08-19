@@ -3,7 +3,7 @@ using System.Data;
 
 namespace PhotoBackend.Data
 {
-    public class DatabaseController
+    public class DatabaseController : IDatabaseController
     {
         public DatabaseController()
         { }
@@ -124,4 +124,4 @@ namespace PhotoBackend.Data
 
     }
 
-    }
+}

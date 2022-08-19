@@ -12,32 +12,31 @@ namespace PhotoBackend.Controllers
     {
 
         private readonly ILogger<UserController> _logger;
+        private readonly IDatabaseController _databaseController;
 
-        public UserController(ILogger<UserController> logger)
+        public UserController(ILogger<UserController> logger, IDatabaseController databaseController)
         {
             _logger = logger;
+            _databaseController = databaseController;
         }
 
         [HttpPost("saveuser", Name = "saveuser")]
         public UInt64 SaveUser(string ipAddress)
         {
-            var dbController = new DatabaseController();
-            return dbController.SaveUser(ipAddress);
+            return _databaseController.SaveUser(ipAddress);
         }
 
         [HttpGet("getusers", Name = "getusers")]
         public List<User> GetUsers()
         {
-            var dbController = new DatabaseController();
-            return dbController.GetUsers();
+            return _databaseController.GetUsers();
 
         }
 
         [HttpGet("getuserid", Name = "getuserid")]
         public int GetUserID(string IPAddress)
         {
-            var dbController = new DatabaseController();
-            return dbController.GetUserID(IPAddress);
+            return _databaseController.GetUserID(IPAddress);
         }
 
     }

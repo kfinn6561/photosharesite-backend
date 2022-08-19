@@ -1,4 +1,5 @@
 using PhotoBackend.CloudStorage;
+using PhotoBackend.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +10,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//IoC setup
 builder.Services.AddSingleton<ICloudStorage, GoogleCloudStorage>();
+builder.Services.AddSingleton<IDatabaseController, DatabaseController>();
 
 var app = builder.Build();
 

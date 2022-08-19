@@ -18,25 +18,25 @@ namespace PhotoBackend.Controllers
 
         private readonly ILogger<MediaFileController> _logger;
         private readonly ICloudStorage _coudstorage;
+        private readonly IDatabaseController _databaseController;
 
-        public MediaFileController(ILogger<MediaFileController> logger, ICloudStorage cloudStorage)
+        public MediaFileController(ILogger<MediaFileController> logger, ICloudStorage cloudStorage, IDatabaseController databaseController)
         {
             _logger = logger;
             _coudstorage = cloudStorage;
+            _databaseController = databaseController;
         }
 
         [HttpGet("all", Name = "GetAllFiles")]
         public List<MediaFile> GetAllFiles(string userIP)
         {
-            var dbController = new DatabaseController();
-            return dbController.GetAllFiles(userIP);
+            return _databaseController.GetAllFiles(userIP);
         }
 
         [HttpPost("insert", Name = "InsertFile")]
         public void InsertFile(int userID, string url, string fileName)
         {
-            var dbController = new DatabaseController();
-            dbController.InsertFile(userID, url, fileName);
+            _databaseController.InsertFile(userID, url, fileName);
         }
         
         [HttpPost("upload", Name = "UploadFile")]
@@ -48,11 +48,9 @@ namespace PhotoBackend.Controllers
 
             string URL = await _coudstorage.UploadFileAsync(file, fileName);
 
-            var dbController = new DatabaseController();
+            int ownerID = _databaseController.GetUserID(IPAdress);
 
-            int ownerID = dbController.GetUserID(IPAdress);
-
-            dbController.InsertFile(ownerID, URL, fileName);
+            _databaseController.InsertFile(ownerID, URL, fileName);
 
             return Ok();
 
@@ -62,16 +60,14 @@ namespace PhotoBackend.Controllers
         [HttpDelete("delete", Name = "DeleteFile")]
         public async Task<IActionResult> DeleteFile(int fileID, string IPAddress)
         {
-            var dbController = new DatabaseController();
-
-            var file = dbController.GetFile(fileID, IPAddress);
+            var file = _databaseController.GetFile(fileID, IPAddress);
 
             if (!file.IsModifyable) {
                 return Unauthorized();
             }
 
             await _coudstorage.DeleteFileAsync(file.FileName);
-            dbController.DeleteFile(fileID);
+            _databaseController.DeleteFile(fileID);
 
             return Ok();
         }
@@ -79,9 +75,7 @@ namespace PhotoBackend.Controllers
         [HttpGet("download", Name = "DownloadFile")]
         public ActionResult DownloadFile(int fileID)
         {
-            var dbController = new DatabaseController();
-
-            var file = dbController.GetFile(fileID, "");
+            var file = _databaseController.GetFile(fileID, "");
 
             var downloadURL = _coudstorage.GetDownloadUrl(file.FileName);
 
